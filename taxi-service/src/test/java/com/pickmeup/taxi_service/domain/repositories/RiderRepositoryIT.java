@@ -20,7 +20,7 @@ public class RiderRepositoryIT {
 
     @Test
     void testSaveAndFindById() {
-        Rider rider = new Rider("rider1", "Alice", new Location(38.8951, -77.0364));
+        Rider rider = new Rider("rider1", "Alice");
         riderRepository.save(rider);
 
         Optional<Rider> foundRider = riderRepository.findById("rider1");
@@ -30,8 +30,8 @@ public class RiderRepositoryIT {
 
     @Test
     void testFindAllRiders() {
-        Rider rider1 = new Rider("rider1", "Alice", new Location(38.8951, -77.0364));
-        Rider rider2 = new Rider("rider2", "Bob", new Location(35.6895, 139.6917));
+        Rider rider1 = new Rider("rider1", "Alice");
+        Rider rider2 = new Rider("rider2", "Bob");
         riderRepository.save(rider1);
         riderRepository.save(rider2);
 

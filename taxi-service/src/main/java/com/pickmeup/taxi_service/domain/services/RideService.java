@@ -4,7 +4,10 @@ import org.springframework.stereotype.Service;
 
 import com.pickmeup.taxi_service.domain.enums.RideStatus;
 import com.pickmeup.taxi_service.domain.exceptions.ResourceNotFoundException;
+import com.pickmeup.taxi_service.domain.models.Driver;
+import com.pickmeup.taxi_service.domain.models.Location;
 import com.pickmeup.taxi_service.domain.models.Ride;
+import com.pickmeup.taxi_service.domain.models.Rider;
 import com.pickmeup.taxi_service.domain.repositories.RideRepository;
 
 @Service
@@ -26,6 +29,11 @@ public class RideService {
         // Mark the ride as completed
         ride.setStatus(RideStatus.COMPLETED);
         rideRepository.save(ride);
+    }
 
+    public Ride createRide(Driver driver, Rider rider, Location pickupLocation, Location dropoffLocation){
+        final Ride ride = new Ride(rider, driver, pickupLocation, dropoffLocation);
+        rideRepository.save(ride);
+        return ride;
     }
 }

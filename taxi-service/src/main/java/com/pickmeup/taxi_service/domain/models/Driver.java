@@ -29,12 +29,24 @@ public class Driver {
         return isAvailable;
     }
 
-    public void setCurrentLocation(Location currentLocation) {
-        this.currentLocation = currentLocation;
+    public Driver setId(String id) {
+        this.id = id;
+        return this;
     }
 
-    public void setAvailable(boolean available) {
+    public Driver setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public Driver setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
+        return this;
+    }
+
+    public Driver setAvailable(boolean available) {
         isAvailable = available;
+        return this;
     }
 
     @Override

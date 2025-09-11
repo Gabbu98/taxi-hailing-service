@@ -1,6 +1,7 @@
 package com.pickmeup.taxi_service.domain.models;
 
 import com.pickmeup.taxi_service.domain.enums.RideStatus;
+import com.pickmeup.taxi_service.domain.utils.StringUtils;
 
 public class Ride {
     private String id;
@@ -10,8 +11,9 @@ public class Ride {
     private Location dropoffLocation;
     private RideStatus status;
 
-    public Ride(String id, Rider rider, Location pickupLocation, Location dropoffLocation) {
-        this.id = id;
+    public Ride(Rider rider, Driver driver, Location pickupLocation, Location dropoffLocation) {
+        this.id = StringUtils.generateUniqueId();
+        this.driver = driver;
         this.rider = rider;
         this.pickupLocation = pickupLocation;
         this.dropoffLocation = dropoffLocation;

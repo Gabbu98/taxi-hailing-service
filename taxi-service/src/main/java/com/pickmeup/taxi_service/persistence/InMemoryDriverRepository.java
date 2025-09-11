@@ -38,6 +38,13 @@ public class InMemoryDriverRepository implements DriverRepository {
     }
 
     @Override
+    public List<Driver> findNonAvailableDrivers() {
+        return drivers.values().stream()
+                .filter(driver -> !driver.isAvailable())
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void deleteById(String driverId) {
         drivers.remove(driverId);
     }

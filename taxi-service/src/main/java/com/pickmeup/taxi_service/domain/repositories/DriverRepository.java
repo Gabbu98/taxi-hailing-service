@@ -10,5 +10,6 @@ public interface DriverRepository {
     Optional<Driver> findById(String driverId);
     List<Driver> findAll();
     List<Driver> findAvailableDrivers();
+    List<Driver> findNonAvailableDrivers();
     void deleteById(String driverId);
 }
