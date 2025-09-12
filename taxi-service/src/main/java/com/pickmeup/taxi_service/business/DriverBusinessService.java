@@ -23,21 +23,12 @@ public class DriverBusinessService {
         this.rideService = rideService;
     }
 
-    @Transactional
-    public void registerAvailability(String driverId, Location location) {
-        // Find if the driver already exists
-        Driver driver = driverService.findDriverById(driverId);
 
-        driver.setCurrentLocation(location);
-        driver.setAvailable(true);
-
-        driverService.updateDriver(driver);
-    }
 
     @Transactional
     public void completeRide(String rideId, String driverId, double latitude, double longitute) {
         rideService.updateRide(rideId);
-        registerAvailability(driverId, new Location(latitude,longitute));
+        driverService.registerAvailability(driverId, new Location(latitude,longitute));
     }
 
     public List<AvailableDriver> getAvailableDrivers(Location location) {

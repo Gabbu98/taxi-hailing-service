@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pickmeup.taxi_service.domain.exceptions.ResourceNotFoundException;
 import com.pickmeup.taxi_service.domain.models.Driver;
+import com.pickmeup.taxi_service.domain.models.Location;
 import com.pickmeup.taxi_service.domain.repositories.DriverRepository;
 
 @Service
@@ -33,5 +35,15 @@ public class DriverService {
             return this.driverRepository.findAvailableDrivers();
         }
         return Boolean.FALSE.equals(isAvailable) ? this.driverRepository.findNonAvailableDrivers() : this.driverRepository.findAll();
+    }
+
+    public void registerAvailability(String driverId, Location location) {
+        // Find if the driver already exists
+        Driver driver = findDriverById(driverId);
+
+        driver.setCurrentLocation(location);
+        driver.setAvailable(true);
+
+        updateDriver(driver);
     }
 }

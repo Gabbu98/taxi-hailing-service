@@ -46,57 +46,31 @@ public class DriverBusinessServiceTest {
     }
 
     @Test
-    void testRegisterAvailability_updatesExistingDriver() {
-        // Arrange
-        when(driverService.findDriverById(driverId)).thenReturn(driver);
-
-        // Act
-        driverBusinessService.registerAvailability(driverId, driverLocation);
-
-        // Assert
-        verify(driverService, times(1)).findDriverById(driverId);
-        verify(driverService, times(1)).updateDriver(driver);
-    }
-
-    @Test
-    void testRegisterAvailability_throwsException_ifDriverNotFound() {
-        // Arrange
-        when(driverService.findDriverById(driverId)).thenThrow(new ResourceNotFoundException("Driver not found"));
-
-        // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> {
-            driverBusinessService.registerAvailability(driverId, driverLocation);
-        });
-
-        verify(driverService, never()).updateDriver(any(Driver.class));
-    }
-
-    @Test
     void testCompleteRide_updatesRideAndDriverAvailability() {
-        // Arrange
         Location endLocation = new Location(34.0522, -118.2437);
-        when(driverService.findDriverById(driverId)).thenReturn(driver);
 
-        // Act
+        doNothing().when(driverService).registerAvailability(eq(driverId), any(Location.class));
+
         driverBusinessService.completeRide(rideId, driverId, endLocation.latitude(), endLocation.longitude());
 
-        // Assert
         verify(rideService, times(1)).updateRide(rideId);
-        verify(driverService, times(1)).findDriverById(driverId);
-        verify(driverService, times(1)).updateDriver(any(Driver.class));
+        verify(driverService, times(1)).registerAvailability(eq(driverId), any(Location.class));
     }
 
     @Test
     void testCompleteRide_throwsException_ifDriverNotFound() {
-        // Arrange
-        when(driverService.findDriverById(driverId)).thenThrow(new ResourceNotFoundException("Driver not found"));
+        String driverId = "driver123";
+        String rideId = "ride123";
 
-        // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> {
-            driverBusinessService.completeRide(rideId, driverId, 0, 0);
-        });
+        doThrow(new ResourceNotFoundException("Driver not found"))
+                .when(driverService)
+                .registerAvailability(eq(driverId), any(Location.class));
 
-        verify(rideService).updateRide(anyString());
+        assertThrows(ResourceNotFoundException.class, () ->
+                driverBusinessService.completeRide(rideId, driverId, 1, 1)
+        );
+
+        verify(rideService).updateRide(rideId);
     }
 
     @Test
@@ -111,7 +85,6 @@ public class DriverBusinessServiceTest {
 
         when(driverService.getDrivers(true)).thenReturn(List.of(driver1, driver2, driver3));
 
-        // when
         List<AvailableDriver> result = driverBusinessService.getAvailableDrivers(riderLocation);
 
         // then: drivers are sorted by ascending distance
@@ -121,35 +94,28 @@ public class DriverBusinessServiceTest {
         assertThat(result).extracting(AvailableDriver::distance)
                 .containsExactly(1.4142135623730951, 2.0, 5.0);
 
-        // and service was invoked
         verify(driverService).getDrivers(true);
     }
 
     @Test
     void getAvailableDrivers_emptyListWhenNoDrivers() {
-        // given
         when(driverService.getDrivers(true)).thenReturn(List.of());
 
-        // when
         List<AvailableDriver> result = driverBusinessService.getAvailableDrivers(new Location(10.0, 10.0));
 
-        // then
         assertThat(result).isEmpty();
         verify(driverService).getDrivers(true);
     }
 
     @Test
     void getAvailableDrivers_singleDriver() {
-        // given
         Location riderLocation = new Location(0.0, 0.0);
         Driver driver = new Driver("D1", "John", new Location(0.0, 3.0)); // distance = 3
 
         when(driverService.getDrivers(true)).thenReturn(List.of(driver));
 
-        // when
         List<AvailableDriver> result = driverBusinessService.getAvailableDrivers(riderLocation);
 
-        // then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).driver()).isEqualTo(driver);
         assertThat(result.get(0).distance()).isEqualTo(3.0);
