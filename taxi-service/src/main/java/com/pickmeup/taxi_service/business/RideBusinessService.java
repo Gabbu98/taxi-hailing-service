@@ -3,10 +3,12 @@ package com.pickmeup.taxi_service.business;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pickmeup.taxi_service.domain.models.Driver;
 import com.pickmeup.taxi_service.domain.models.Location;
 import com.pickmeup.taxi_service.domain.models.Ride;
+import com.pickmeup.taxi_service.domain.models.Rider;
 import com.pickmeup.taxi_service.domain.services.DriverService;
 import com.pickmeup.taxi_service.domain.services.RideService;
 import com.pickmeup.taxi_service.domain.services.RiderService;
@@ -21,6 +23,13 @@ public class RideBusinessService {
     private RideService rideService;
     private RiderService riderService;
 
+    public RideBusinessService(DriverService driverService, RideService rideService, RiderService riderService) {
+        this.driverService = driverService;
+        this.rideService = rideService;
+        this.riderService = riderService;
+    }
+
+    @Transactional
     public RideDetails requestRide(String riderId, Location pickupLocation, Location dropoffLocation) {
 
         List<Driver> availableDrivers = driverService.getDrivers(true);
@@ -42,5 +51,11 @@ public class RideBusinessService {
         // return driver and ride details
 
         return new RideDetails(ride, nearestDriver.distance());
+    }
+
+    @Transactional
+    void test(){
+        rideService.createRide(new Driver("driverId","name", new Location(1,1)),new Rider("riderId", "name"),new Location(1,1),new Location(2,2));
+        throw new RuntimeException();
     }
 }

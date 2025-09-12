@@ -3,16 +3,16 @@ package com.pickmeup.taxi_service.persistence;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Repository;
 
+import com.pickmeup.taxi_service.configurations.transactions.TransactionalMapRepository;
 import com.pickmeup.taxi_service.domain.models.Rider;
 import com.pickmeup.taxi_service.domain.repositories.RiderRepository;
 
 @Repository
 public class InMemoryRiderRepository implements RiderRepository {
-    private final ConcurrentHashMap<String, Rider> riders = new ConcurrentHashMap<>();
+    private final TransactionalMapRepository<String, Rider> riders = new TransactionalMapRepository<>();
 
     @Override
     public void save(Rider rider) {

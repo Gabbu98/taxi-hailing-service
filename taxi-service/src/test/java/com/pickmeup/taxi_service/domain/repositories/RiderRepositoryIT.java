@@ -9,7 +9,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.pickmeup.taxi_service.domain.models.Location;
 import com.pickmeup.taxi_service.domain.models.Rider;
 
 @SpringBootTest
