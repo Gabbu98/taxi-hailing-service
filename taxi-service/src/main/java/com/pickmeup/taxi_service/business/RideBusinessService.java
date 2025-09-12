@@ -54,6 +54,24 @@ public class RideBusinessService {
     }
 
     @Transactional
+    public RideDetails completeRide(String rideId, String driverId, double latitude, double longitude) {
+        // Update the ride first
+        Ride completedRide = rideService.updateRide(rideId);
+
+        // Find the driver
+        Driver driver = driverService.findDriverById(driverId);
+
+        // Register the driver as available at the new location
+        driver.setCurrentLocation(new Location(latitude, longitude));
+        driver.setAvailable(true);
+
+        // Save the driver update
+        driverService.updateDriver(driver);
+
+        return new RideDetails(completedRide, 0);
+    }
+
+    @Transactional
     void test(){
         rideService.createRide(new Driver("driverId","name", new Location(1,1)),new Rider("riderId", "name"),new Location(1,1),new Location(2,2));
         throw new RuntimeException();

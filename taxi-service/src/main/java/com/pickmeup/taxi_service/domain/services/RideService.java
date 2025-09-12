@@ -23,12 +23,13 @@ public class RideService {
         return rideRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ride not found with ID: %s".formatted(id)));
     }
 
-    public void updateRide(String id) {
+    public Ride updateRide(String id) {
         Ride ride = getRideById(id);
 
         // Mark the ride as completed
         ride.setStatus(RideStatus.COMPLETED);
         rideRepository.save(ride);
+        return ride;
     }
 
     public Ride createRide(Driver driver, Rider rider, Location pickupLocation, Location dropoffLocation){
