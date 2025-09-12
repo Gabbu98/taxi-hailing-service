@@ -23,8 +23,6 @@ public class DriverBusinessService {
         this.rideService = rideService;
     }
 
-
-
     @Transactional
     public void completeRide(String rideId, String driverId, double latitude, double longitute) {
         rideService.updateRide(rideId);
