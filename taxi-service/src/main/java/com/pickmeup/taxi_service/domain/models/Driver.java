@@ -10,7 +10,7 @@ public class Driver {
         this.id = id;
         this.name = name;
         this.currentLocation = currentLocation;
-        this.isAvailable = false; // Drivers are unavailable by default
+        this.isAvailable = true; // Drivers should be unavailable by default, and allow them the option to enable their availability instead
     }
 
     public String getId() {

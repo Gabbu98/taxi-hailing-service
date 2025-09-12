@@ -18,11 +18,11 @@ Here are the domains and their corresponding RESTful APIs, updated to reflect th
 ### 1. Rider Endpoints
 These endpoints are for the user's application.
 
-- **POST /rides**
+- **POST /rider/{riderId}/rides**
     - *Action*: Request a new ride.
     - *Request Body*: Includes the rider's ID and pickup/drop-off locations.
 
-- **GET /rides/{rideId}**
+- **GET /rider/{rideId}/rides/{rideId}**
     - *Action*: Get the status and details of a specific ride.
 
 - **DELETE /rides/{rideId}**
