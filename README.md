@@ -28,25 +28,16 @@ These endpoints are for the user's application.
 - **DELETE /rides/{rideId}**
     - *Action*: Cancel a ride.
 
-- **GET /drivers**
-    - *Action*: Find available drivers near a specific location.
-    - *Query Parameters*: `latitude` and `longitude`.
-
 ---
 
 ### 2. Driver Endpoints
 These endpoints are for the driver's application.
 
-- **PATCH /drivers/{driverId}**
+- **GET /drivers**
+    - *Action*: Find available drivers near a specific location.
+    - *Query Parameters*: `latitude` and `longitude`.
+  
+- **POST /drivers/{driverId}/rides/{rideId}/actions/complete**
     - *Action*: Update a driver's availability and initial location.  
       This single request handles the transition to being "available" and provides the necessary location data.
     - *Request Body*: A JSON object with both the status and location.
-
-  ```json
-  {
-    "status": "available",
-    "location": {
-      "latitude": 34.0522,
-      "longitude": -118.2437
-    }
-  }
