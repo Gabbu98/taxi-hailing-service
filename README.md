@@ -4,6 +4,18 @@
 
 PickMeUp is a taxi hailing web application. Its purpose is to connect riders who need a ride with drivers who can provide one. The system is designed using Clean Architecture principles to keep everything organized and easy to manage.
 
+## Build and Run Instructions
+
+- **Java Version**: 21
+- **Build Project**:  
+  ```bash
+  mvn clean install -DskipTests
+
+    Run JAR:
+    After building, you can run the generated JAR file:
+
+java -jar target/pickmeup-0.0.1-SNAPSHOT.jar
+
 ## Core Components
 
 - **Rider**: The customer who requests a ride.
