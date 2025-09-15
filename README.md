@@ -50,21 +50,19 @@ The system follows a layered approach based on Clean Architecture, which separat
 
 ## Persistence
 
-- **DriverRepository**: The interface for managing driver data.
-- **InMemoryDriverRepository**: A temporary implementation using a `ConcurrentHashMap` to store driver data with transactional support.
+- **DriverRepository, RiderRepository, RideRepository**: The interface for managing driver data.
+- **InMemoryDriverRepository, InMemoryRiderRepository, InMemoryRideRepository**: A temporary implementation using a `ConcurrentHashMap` to store data with transactional support.
 - **TransactionalMapRepository**: Ensures thread-safe ACID-like operations on the in-memory data.
 - **InMemoryTransactionManager**: Handles the commit and rollback of in-memory operations.
-
-## Tech Stack
-
-- **Backend**: Java, Spring Boot
-- **Persistence**: In-memory transactional map (to simulate a database)
-- **Real-Time**: WebSockets or polling for live location updates
-- **API Layer**: REST controllers
 
 ## Transaction Management
 
 The system uses custom transaction management to ensure ride creation and driver updates are atomic. This is achieved using `@Transactional` annotations and a custom transaction manager that emulates commit and rollback over the in-memory repositories. Thread-local storage ensures that multiple requests don't interfere with each other.
+
+## Testing
+
+- **SpringBootTests**: Ensures that repositories always behave consistently under different scenarios.
+- **Unit Tests**: Business services are covered with unit tests to verify that core ride request and ride completion logic works as expected.
 
 ## High-Level API Endpoints
 
@@ -82,4 +80,4 @@ The system uses custom transaction management to ensure ride creation and driver
 - Add authentication and JWT for secure rider and driver logins.
 - Integrate a payment system for ride completion.
 - Enhance the ride matching algorithm to include factors like load balancing and estimated time of arrival (ETA).
-- Add unit and integration tests to ensure the entire system is robust and reliable.
+- Add more unit and integration tests to ensure the entire system is robust and reliable.
