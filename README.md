@@ -1,43 +1,85 @@
-By choosing **Option 1**, the API design prioritizes simplicity and atomic updates.  
-This approach is practical for a system where the "go online" action is infrequent and must be handled with a single, consistent request.
+# PickMeUp Taxi Service – System Design
 
-# Domains and APIs for a Ride-Matching Service
+## Overview
 
-Here are the domains and their corresponding RESTful APIs, updated to reflect the combined PATCH request for a driver's status and location.
+PickMeUp is a taxi hailing web application. Its purpose is to connect riders who need a ride with drivers who can provide one. The system is designed using Clean Architecture principles to keep everything organized and easy to manage.
 
-## Domains
-- **Rider**: Represents the user requesting a ride.
-- **Driver**: Represents the person providing the ride.
-- **Ride**: Represents the service event, connecting a rider and a driver.
-- **Location**: A value object representing geographical coordinates (latitude and longitude), used within other domains.
+## Core Components
 
----
+- **Rider**: The customer who requests a ride.
+- **Driver**: The person who accepts and completes the ride.
+- **Ride**: The core connection between a rider and a driver, tracking the trip's details and status.
 
-## REST APIs
+## Architecture
 
-### 1. Rider Endpoints
-These endpoints are for the user's application.
+The system follows a layered approach based on Clean Architecture, which separates the core business rules from external details like the database or web APIs.
 
-- **POST /rider/{riderId}/rides**
-    - *Action*: Request a new ride.
-    - *Request Body*: Includes the rider's ID and pickup/drop-off locations.
+- **Controllers**: These expose REST APIs that allow riders and drivers to interact with the system.
+- **Business Services**: These handle the main logic, such as coordinating ride requests, matching riders to drivers, and updating ride statuses.
+- **Domain Models**: These are the core data structures for key entities like Driver, Rider, Ride, and Location. They don't contain any business logic.
+- **Repositories**: These are interfaces that define how data is accessed and stored. In this version, they use an in-memory solution.
+- **Transaction Management**: A custom system to ensure that a group of updates (like creating a ride and changing a driver's status) either all succeed or all fail together.
 
-- **GET /rider/{rideId}/rides/{rideId}**
-    - *Action*: Get the status and details of a specific ride.
+## Domain Models
 
-- **DELETE /rides/{rideId}**
-    - *Action*: Cancel a ride.
+- **Driver**: A driver has an `id`, `name`, `currentLocation`, and a `status` indicating if they are available. They can update their location and toggle their availability.
+- **Rider**: A rider has an `id` and a `name`.
+- **Ride**: A ride includes an `id`, the `rider`, the assigned `driver`, `pickupLocation`, `dropoffLocation`, and a `status`. The status progresses through a lifecycle: `REQUESTED → ACCEPTED → IN_PROGRESS → COMPLETED`.
+- **Location**: An immutable record with latitude and longitude coordinates.
 
----
+## Core Features
 
-### 2. Driver Endpoints
-These endpoints are for the driver's application.
+- **Rider Features**: Riders can request a ride and track its progress in real-time.
+- **Driver Features**: Drivers can go online/offline, accept or complete rides, and send real-time location updates.
+- **System Features**: The system matches riders to the nearest available drivers and updates driver availability automatically upon ride completion.
 
-- **GET /drivers**
-    - *Action*: Find available drivers near a specific location.
-    - *Query Parameters*: `latitude` and `longitude`.
-  
-- **POST /drivers/{driverId}/rides/{rideId}/actions/complete**
-    - *Action*: Update a driver's availability and initial location.  
-      This single request handles the transition to being "available" and provides the necessary location data.
-    - *Request Body*: A JSON object with both the status and location.
+## Business Logic
+
+### Ride Request Flow
+
+1. A rider sends a ride request with a pickup and drop-off location.
+2. The system finds the nearest available driver using a distance calculation.
+3. The chosen driver is assigned to the ride and marked as unavailable. A new ride is created.
+4. The system returns the ride details to the rider.
+
+### Ride Completion Flow
+
+1. The driver marks the ride as complete.
+2. The ride's status is updated to `COMPLETED`.
+3. The driver's location is updated, and their availability is set back to true.
+
+## Persistence
+
+- **DriverRepository**: The interface for managing driver data.
+- **InMemoryDriverRepository**: A temporary implementation using a `ConcurrentHashMap` to store driver data with transactional support.
+- **TransactionalMapRepository**: Ensures thread-safe ACID-like operations on the in-memory data.
+- **InMemoryTransactionManager**: Handles the commit and rollback of in-memory operations.
+
+## Tech Stack
+
+- **Backend**: Java, Spring Boot
+- **Persistence**: In-memory transactional map (to simulate a database)
+- **Real-Time**: WebSockets or polling for live location updates
+- **API Layer**: REST controllers
+
+## Transaction Management
+
+The system uses custom transaction management to ensure ride creation and driver updates are atomic. This is achieved using `@Transactional` annotations and a custom transaction manager that emulates commit and rollback over the in-memory repositories. Thread-local storage ensures that multiple requests don't interfere with each other.
+
+## High-Level API Endpoints
+
+### Rider APIs
+
+- `POST /rider/{riderId}/ride` – Requests a new ride.
+
+### Driver APIs
+
+- `POST /drivers/{driverId}/rides/{rideId}/actions/complete` – Completes an assigned ride.
+
+## Next Steps / Improvements
+
+- Replace the in-memory storage with a real database (e.g., PostgreSQL, MySQL).
+- Add authentication and JWT for secure rider and driver logins.
+- Integrate a payment system for ride completion.
+- Enhance the ride matching algorithm to include factors like load balancing and estimated time of arrival (ETA).
+- Add unit and integration tests to ensure the entire system is robust and reliable.
