@@ -93,3 +93,14 @@ The system uses custom transaction management to ensure ride creation and driver
 - Integrate a payment system for ride completion.
 - Enhance the ride matching algorithm to include factors like load balancing and estimated time of arrival (ETA).
 - Add more unit and integration tests to ensure the entire system is robust and reliable.
+
+### For next interview side notes & improvements
+- Account Domain - RIDER, DRIVER -> OAuth Determined (via scopes and roles)
+- Ride Domain
+
+APIs
+- register driver availability: PATCH /drivers/{driverId} - 200 OK
+- request a ride: POST /rides - 202 Accepted
+- complete a ride: PUT /rides/{rideId} - 200 OK
+- get list of currently available drivers: GET /drivers
+
